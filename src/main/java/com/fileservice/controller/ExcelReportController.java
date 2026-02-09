@@ -8,6 +8,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+
 @RestController
 @RequestMapping("/api/excel")
 public class ExcelReportController {
@@ -59,5 +63,34 @@ public class ExcelReportController {
 
         workbook.write(response.getOutputStream());
         workbook.close();
+    }
+
+    @GetMapping("/donut2")
+    public void downloadExcelV1() throws Exception {
+        File file = new File("D:\\excels\\dashboard.xlsx");
+        if (!file.exists()) {
+            file.getParentFile().mkdir();
+        }
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        XSSFSheet sheet = workbook.createSheet("Dashboard");
+
+        int currentRow = 0;
+        createRowWithData(sheet, currentRow++, "Name","Age","Department" );
+        createRowWithData(sheet, currentRow++, "nikita","28","Technical" );
+
+
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        workbook.write(fileOutputStream);
+
+        fileOutputStream.close();
+        workbook.close();
+    }
+
+    private void createRowWithData(XSSFSheet sheet, int rowIndex, String name, String age, String dept) {
+        XSSFRow row = sheet.createRow(rowIndex);
+        row.createCell(0).setCellValue(name);
+        row.createCell(1).setCellValue(age);
+        row.createCell(2).setCellValue(dept);
+
     }
 }
