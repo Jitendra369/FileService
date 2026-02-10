@@ -1,5 +1,9 @@
 package com.fileservice.controller;
 
+import org.apache.poi.common.usermodel.HyperlinkType;
+import org.apache.poi.sl.usermodel.ShapeType;
+import org.apache.poi.ss.usermodel.*;
+import org.openxmlformats.schemas.drawingml.x2006.main.STShapeType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -127,6 +131,23 @@ public class ExcelReportController {
 
         XSSFDrawing drawing = sheet.createDrawingPatriarch();
 
+//        XSSFClientAnchor textAnchor =
+//                drawing.createAnchor(0, 0, 0, 0,
+//                        6, 7,   // column, row START (below chart)
+//                        7, 9);  // column, row END
+//
+//        XSSFSimpleShape textBox = drawing.createSimpleShape(textAnchor);
+//        XSSFRichTextString text =
+//                new XSSFRichTextString("Total : 15");
+//
+//        XSSFFont font = workbook.createFont();
+//        font.setBold(true);
+//        font.setFontHeight(14);
+//
+//        text.applyFont(font);
+////        textBox.setShapeType(XSSFSimpleShape.c);
+//        textBox.setText(text);
+
 
         XSSFClientAnchor anchor = drawing.createAnchor(0, 0, 0, 0, 3, 1, 10, 15);
 
@@ -163,6 +184,120 @@ public class ExcelReportController {
                 .getDoughnutChartArray(0)
                 .addNewHoleSize()
                 .setVal((short) 70);
+
+//        ###################### Adding Text , center Number ######################
+// ================== HYPERLINK CELL ==================
+//        Row linkRow = sheet.createRow(20);
+//        Cell linkCell = linkRow.createCell(6);
+//        linkCell.setCellValue("Total : 15");
+//
+//        CreationHelper helper = workbook.getCreationHelper();
+//        Hyperlink link = helper.createHyperlink(HyperlinkType.URL);
+//        link.setAddress("https://example.com"); // your URL
+//
+//        linkCell.setHyperlink(link);
+//
+//// hide row
+//        linkRow.setZeroHeight(true);
+
+
+//        ###################### Adding Text , center Number ######################
+//        int total = 15;
+//
+//// Approximate donut center (based on chart anchor 3,1 → 10,15)
+//        int centerRowIndex = 8;
+//        int centerColIndex = 6;
+//
+//        Row centerRow = sheet.getRow(centerRowIndex);
+//        if (centerRow == null) {
+//            centerRow = sheet.createRow(centerRowIndex);
+//        }
+//
+//        Cell centerCell = centerRow.createCell(centerColIndex);
+//        centerCell.setCellValue(total);
+//
+//// Hyperlink
+//        CreationHelper helper = workbook.getCreationHelper();
+//        Hyperlink hyperlink = helper.createHyperlink(HyperlinkType.URL);
+//        hyperlink.setAddress("https://example.com");
+//        centerCell.setHyperlink(hyperlink);
+//
+//// Styling to look like center text
+//        CellStyle style = workbook.createCellStyle();
+//        Font font = workbook.createFont();
+//        font.setBold(true);
+//        font.setFontHeightInPoints((short) 18);
+//
+//        style.setFont(font);
+//        style.setAlignment(HorizontalAlignment.CENTER);
+//        style.setVerticalAlignment(VerticalAlignment.CENTER);
+//
+//        centerCell.setCellStyle(style);
+//
+//// Increase row height so it looks centered
+//        centerRow.setHeightInPoints(35);
+
+        // ================= CENTER TEXT =================
+        int total = 15;
+
+// Center of your chart (chart anchor = 3,1 → 10,15)
+        XSSFClientAnchor textAnchor =
+                drawing.createAnchor(0, 0, 0, 0,
+                        6, 7,
+                        7, 9);
+
+        XSSFSimpleShape textBox = drawing.createSimpleShape(textAnchor);
+
+// Important: use OBJECT_TYPE_TEXT (not STShapeType)
+//        textBox.setShapeType(XSSFSimpleShape.OBJECT_TYPE_TEXT);
+
+        XSSFRichTextString centerText =
+                new XSSFRichTextString(String.valueOf(total));
+
+        XSSFFont centerFont = workbook.createFont();
+        centerFont.setBold(true);
+        centerFont.setFontHeight(18);
+
+        centerText.applyFont(centerFont);
+
+        textBox.setText(centerText);
+// =============================================
+
+        // ================= LINK BELOW CHART =================
+        int linkRowIndex = 16;
+        int linkColIndex = 6;
+
+        Row linkRow = sheet.getRow(linkRowIndex);
+        if (linkRow == null) {
+            linkRow = sheet.createRow(linkRowIndex);
+        }
+
+        Cell linkCell = linkRow.createCell(linkColIndex);
+        linkCell.setCellValue("View details");
+
+// Create hyperlink
+        CreationHelper helper = workbook.getCreationHelper();
+        Hyperlink link = helper.createHyperlink(HyperlinkType.URL);
+        link.setAddress("https://example.com");   // your target URL
+        linkCell.setHyperlink(link);
+
+// Style like a hyperlink
+        CellStyle linkStyle = workbook.createCellStyle();
+        Font linkFont = workbook.createFont();
+        linkFont.setUnderline(Font.U_SINGLE);
+        linkFont.setColor(IndexedColors.BLUE.getIndex());
+        linkFont.setBold(true);
+
+        linkStyle.setFont(linkFont);
+        linkStyle.setAlignment(HorizontalAlignment.CENTER);
+
+        linkCell.setCellStyle(linkStyle);
+
+// Optional: increase row height
+        linkRow.setHeightInPoints(22);
+// ===================================================
+
+
 
         response.setContentType(
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
