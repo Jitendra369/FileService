@@ -1,20 +1,10 @@
 package com.fileservice.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.poi.common.usermodel.HyperlinkType;
-import org.apache.poi.sl.usermodel.ShapeType;
 import org.apache.poi.ss.usermodel.*;
-import org.openxmlformats.schemas.drawingml.x2006.main.STShapeType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xddf.usermodel.chart.*;
-import org.apache.poi.xssf.usermodel.*;
-import org.openxmlformats.schemas.drawingml.x2006.chart.CTHoleSize;
-import org.openxmlformats.schemas.drawingml.x2006.chart.CTPieChart;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-import jakarta.servlet.http.HttpServletResponse;
 import org.apache.poi.xssf.usermodel.*;
 import org.openxmlformats.schemas.drawingml.x2006.chart.*;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,10 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.math.BigInteger;
-
-
-import java.io.File;
 
 @RestController
 @RequestMapping("/api/excel")
@@ -155,7 +141,6 @@ public class ExcelReportController {
         XSSFChart chart = drawing.createChart(anchor);
         chart.setTitleText("Status");
 
-<<<<<<< HEAD
         // Create DONUT chart ONCE
         XDDFChartData chartData = chart.createData(ChartTypes.DOUGHNUT, null, null);
 
@@ -302,7 +287,6 @@ public class ExcelReportController {
 
 
 
-=======
         // Old POI chart API
         CTChart ctChart = chart.getCTChart();
         CTPlotArea plotArea = ctChart.getPlotArea();
@@ -321,7 +305,6 @@ public class ExcelReportController {
         val.addNewNumRef().setF("Dashboard!$B$1:$B$2");
 
         // Response
->>>>>>> 92b823f208e96779067eca56de9a4f23b7a4f304
         response.setContentType(
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setHeader("Content-Disposition",
